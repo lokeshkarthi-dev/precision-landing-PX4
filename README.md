@@ -7,6 +7,12 @@ The drone detects an **ArUco marker** on the ground using a downward-facing came
 
 ---
 
+## 📚 System Documentation
+
+📖 **[Precision Landing for Multirotors - Complete Documentation](Precision_Landing_for_Multirotors.pdf)**
+
+---
+
 ## How It Works
 
 ```
@@ -53,6 +59,7 @@ precision-landing/
 ├── docs/
 │   └── (additional documentation)
 ├── requirements.txt
+├── Precision_Landing_for_Multirotors.pdf
 └── README.md
 ```
 
