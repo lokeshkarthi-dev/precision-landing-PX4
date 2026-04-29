@@ -27,7 +27,7 @@ PX4 SITL (executes commands → updates drone position)
 ### State Machine
 
 | State | Description |
-|---|---|
+|---|-----------|
 | **RTL** | Drone returns to launch. Waits for marker to be visible for 3 continuous seconds. |
 | **OFFBOARD_INIT** | Pre-streams zero-velocity setpoints to satisfy PX4's OFFBOARD requirement. |
 | **ALIGN** | Corrects horizontal position over the marker. No descent yet. |
@@ -75,7 +75,22 @@ cd PX4-Autopilot
 bash ./Tools/setup/ubuntu.sh
 ```
 
-### 2 — ROS2 Humble
+### 2 — Gazebo & Gazebo Garden
+
+```bash
+# Add Gazebo repository
+sudo wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+
+# Update and install Gazebo
+sudo apt update
+sudo apt install -y gz-garden
+
+# Verify installation
+gz --version
+```
+
+### 3 — ROS2 Humble
 
 ```bash
 sudo apt install software-properties-common
@@ -87,7 +102,7 @@ echo 'source /opt/ros/humble/setup.bash' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### 3 — Project dependencies
+### 4 — Project dependencies
 
 ```bash
 # System packages
@@ -178,6 +193,7 @@ All parameters are in [`config/params.yaml`](config/params.yaml).
 | **ROS2 topic not found** | Ensure `ros_gz_bridge` is running and topic name matches exactly |
 | **Drone overshoots** | Reduce `descend_rate_mps` (try `0.1`) or lower `land_altitude_m` |
 | **imshow window missing** | Headless environment — comment out `imshow()` and use `rqt_image_view /camera_debug` |
+| **Gazebo not found** | Verify Gazebo installation with `gz --version` and ensure `gz-garden` is installed |
 
 ---
 
