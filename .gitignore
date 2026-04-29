@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE / editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ROS2 / Colcon build artifacts
+install/
+log/
+*.db3          # rosbag2
+
+# Gazebo / simulation
+~gazebo/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

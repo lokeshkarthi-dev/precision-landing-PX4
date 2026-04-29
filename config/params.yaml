@@ -1,0 +1,27 @@
+# config/params.yaml
+# Tunable parameters for the Precision Landing system.
+# Edit these values before running — no code changes needed.
+
+control:
+  kp: 0.6                 # Proportional gain (increase = faster, decrease = less oscillation)
+  kp_yaw_align: 1.2       # Yaw gain during ALIGN state
+  kp_yaw_descend: 1.0     # Yaw gain during DESCEND state
+  descend_rate_mps: 0.2   # Vertical descent speed (m/s); increase to land faster
+  align_threshold: 0.1    # Normalised error below which drone is considered "centred"
+  control_hz: 20          # Control loop frequency
+
+detection:
+  stable_detect_sec: 3.0  # Seconds marker must be visible before OFFBOARD switch
+  detection_timeout: 0.5  # Seconds without detection before stability timer resets
+
+landing:
+  land_altitude_m: 0.5    # Switch to PX4 LAND when altitude drops below this value
+
+mavsdk:
+  system_address: "udp://:14540"  # PX4 SITL default; change for real hardware
+  offboard_prestream: 50          # Zero-velocity setpoints to stream before OFFBOARD start
+
+camera:
+  topic: "/gimbal_camera"
+  aruco_dict: "DICT_4X4_50"      # ArUco dictionary (must match printed markers)
+  downsample: 2                   # Downsample factor (2 = half resolution = 4× faster)

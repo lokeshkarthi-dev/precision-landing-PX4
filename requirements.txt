@@ -1,0 +1,9 @@
+# Python dependencies for Autonomous Precision Landing System
+# Install with: pip install -r requirements.txt
+
+mavsdk>=1.4.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# Note: rclpy and cv_bridge are installed via apt (ROS2 packages), not pip.
+# See README.md for full setup instructions.
