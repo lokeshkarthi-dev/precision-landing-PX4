@@ -1,27 +1,77 @@
-# config/params.yaml
-# Tunable parameters for the Precision Landing system.
-# Edit these values before running — no code changes needed.
+# params.yaml - every tunable setting for the precision landing system (v2)
+#
+# Both nodes read this file. Start each one with:
+#   python3 src/camera_node.py       --ros-args --params-file config/params.yaml
+#   python3 src/precision_landing.py --ros-args --params-file config/params.yaml
+#
+# Rules for editing:
+#  * Numbers that have a decimal point in this file (0.5, 1.0) MUST keep the
+#    decimal point. Writing "1" for a decimal setting makes ROS 2 reject it.
+#  * Change ONE value at a time and re-test in the simulator.
+#  * The top-level names (aruco_detector, precision_landing) must match the
+#    node names in the code.
 
-control:
-  kp: 0.6                 # Proportional gain (increase = faster, decrease = less oscillation)
-  kp_yaw_align: 1.2       # Yaw gain during ALIGN state
-  kp_yaw_descend: 1.0     # Yaw gain during DESCEND state
-  descend_rate_mps: 0.2   # Vertical descent speed (m/s); increase to land faster
-  align_threshold: 0.1    # Normalised error below which drone is considered "centred"
-  control_hz: 20          # Control loop frequency
+aruco_detector:
+  ros__parameters:
+    image_topic: /downcam/image_raw     # ROS-side name chosen in the bridge command
+    error_topic: /aruco_error
+    debug_topic: /camera_debug
+    aruco_dictionary: DICT_4X4_50
+    target_marker_id: 0                 # which marker ID to land on (-1 = any)
+    downscale: 1                        # 1 = full size, 2 = half size (faster, shorter range)
+    publish_debug_image: true
+    debug_publish_every_n: 3            # publish every 3rd debug frame (saves CPU)
+    show_window: false                  # true only if you have a desktop display
+    log_period_s: 1.0
 
-detection:
-  stable_detect_sec: 3.0  # Seconds marker must be visible before OFFBOARD switch
-  detection_timeout: 0.5  # Seconds without detection before stability timer resets
+precision_landing:
+  ros__parameters:
+    # ---- connection / startup ----
+    mavsdk_address: udp://:14540        # SITL default; see README for real hardware
+    error_topic: /aruco_error
+    start_with_rtl: true                # true: command RTL first; false: you hover near the marker yourself
+    control_hz: 20.0
 
-landing:
-  land_altitude_m: 0.5    # Switch to PX4 LAND when altitude drops below this value
+    # ---- marker detection ----
+    detection_timeout_s: 0.5            # marker counts as "lost" after this long without a detection
+    stable_detect_s: 3.0                # marker must be seen this long before OFFBOARD starts
+    reacquire_s: 0.5                    # after a loss, marker must be seen this long to resume
+    filter_alpha: 0.4                   # smoothing of errors: 1.0 = none, smaller = smoother but slower
 
-mavsdk:
-  system_address: "udp://:14540"  # PX4 SITL default; change for real hardware
-  offboard_prestream: 50          # Zero-velocity setpoints to stream before OFFBOARD start
+    # ---- camera ----
+    # Horizontal field of view of the camera in radians. CHECK THIS FOR YOUR CAMERA
+    # (see docs/SITL_RUNBOOK.md, section "Find the camera field of view").
+    camera_hfov_rad: 1.74
+    min_height_for_scale_m: 0.3         # avoids dividing by ~0 when very close to the ground
 
-camera:
-  topic: "/gimbal_camera"
-  aruco_dict: "DICT_4X4_50"      # ArUco dictionary (must match printed markers)
-  downsample: 2                   # Downsample factor (2 = half resolution = 4× faster)
+    # ---- horizontal control ----
+    kp: 0.5                             # 1/second. Higher = faster centring, too high = wobble
+    max_horizontal_speed_mps: 1.0
+    max_horizontal_accel_mps2: 1.0      # limits how suddenly the speed command can change
+    sign_forward: -1.0                  # flip to +1.0 if the drone moves AWAY from the marker (up/down axis)
+    sign_right: 1.0                     # flip to -1.0 if the drone moves AWAY from the marker (left/right axis)
+
+    # ---- alignment (distances are in METRES on the ground) ----
+    align_threshold_m: 0.25             # "centred" when closer than this
+    align_dwell_s: 1.0                  # must stay centred this long before descending
+    realign_threshold_m: 0.8            # if error grows beyond this while descending, stop and re-centre
+
+    # ---- vertical control ----
+    descent_gain: 0.15                  # descent speed = gain x height (fast when high, slow when low)
+    descent_min_mps: 0.15
+    descent_max_mps: 0.5
+    max_vertical_accel_mps2: 0.5
+    final_descent_alt_m: 1.5            # below this, marker may leave the camera view: keep going straight down
+    land_altitude_m: 0.5                # hand over to PX4 LAND at this height
+
+    # ---- marker lost (failsafe) ----
+    lost_hover_s: 1.0                   # stop and hover for this long first
+    lost_abort_s: 8.0                   # after this long without the marker, give up and HOLD
+    recover_climb_mps: 0.3              # climb slowly to widen the view while searching
+    max_recover_alt_m: 15.0             # never climb above this while searching
+
+    # ---- telemetry / timing ----
+    telemetry_rate_hz: 20.0
+    telemetry_timeout_s: 1.0            # altitude older than this is not trusted (drone stops descending)
+    prestream_s: 2.5                    # seconds of zero-velocity setpoints before OFFBOARD start
+    land_timeout_s: 60.0
