@@ -1,9 +1,8 @@
-# Python dependencies for Autonomous Precision Landing System
-# Install with: pip install -r requirements.txt
+# Python packages (install with: pip install -r requirements.txt)
+#
+# ROS 2 packages (rclpy, cv_bridge, geometry_msgs, sensor_msgs) come from the
+# ROS 2 Humble apt packages, NOT from pip. See docs/SITL_RUNBOOK.md.
 
-mavsdk>=1.4.0
-opencv-python>=4.8.0
-numpy>=1.24.0
-
-# Note: rclpy and cv_bridge are installed via apt (ROS2 packages), not pip.
-# See README.md for full setup instructions.
+mavsdk
+numpy<2            # ROS 2 Humble's cv_bridge was built against NumPy 1.x
+opencv-python>=4.7 # 4.7 or newer is needed for cv2.aruco.ArucoDetector
