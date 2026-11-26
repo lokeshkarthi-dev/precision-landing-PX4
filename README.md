@@ -116,10 +116,9 @@ For the marker world that ships with PX4, use `PX4_GZ_WORLD=aruco make px4_sitl 
 
 **Terminal 2: camera bridge**
 ```bash
-source /opt/ros/humble/setup.bash
 ros2 run ros_gz_bridge parameter_bridge \
-  "/world/default/model/x500_mono_cam_down_0/link/camera_link/sensor/camera/image@sensor_msgs/msg/Image[gz.msgs.Image" \
-  --ros-args -r /world/default/model/x500_mono_cam_down_0/link/camera_link/sensor/camera/image:=/downcam/image_raw
+  "/world/aruco/model/x500_mono_cam_down_0/link/camera_link/sensor/imager/image@sensor_msgs/msg/Image[gz.msgs.Image" \
+  --ros-args -r /world/aruco/model/x500_mono_cam_down_0/link/camera_link/sensor/imager/image:=/gimbal_camera
 ```
 Check the exact topic first with `gz topic -l | grep image` (see the runbook).
 
