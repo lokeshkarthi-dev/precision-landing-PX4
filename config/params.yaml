@@ -21,7 +21,7 @@ aruco_detector:
     downscale: 1                        # 1 = full size, 2 = half size (faster, shorter range)
     publish_debug_image: true
     debug_publish_every_n: 3            # publish every 3rd debug frame (saves CPU)
-    show_window: false                  # true only if you have a desktop display
+    show_window: true                  # true only if you have a desktop display
     log_period_s: 1.0
 
 precision_landing:
